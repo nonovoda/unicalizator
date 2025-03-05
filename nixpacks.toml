@@ -1,9 +1,6 @@
-[phases]
-  [phases.setup]
-  language = "python"
-  version = "3.10"
-
 [phases.setup]
+language = "python"
+version = "3.10"
 nixPkgs = [
   "zlib",
   "libjpeg",
