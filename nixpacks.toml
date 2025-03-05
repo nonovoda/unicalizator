@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = [
+  "zlib",
+  "libjpeg-turbo",
+  "freetype",
+  "gcc",
+  "pkgconfig"
+]
