@@ -4,5 +4,5 @@ nixPkgs = [
   "libjpeg",
   "freetype",
   "gcc",
-  "pkgconfig"
+  "pkg-config"
 ]
