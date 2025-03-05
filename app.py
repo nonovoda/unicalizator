@@ -45,11 +45,22 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def process_video(video_path: str, output_path: str):
-    clip = mpy.VideoFileClip(video_path)
-    new_clip = clip.fx(mpy.vfx.speedx, factor=0.8)
-    new_clip.write_videofile(output_path, codec="libx264", audio_codec="aac", logger=None)
-    new_clip.close()
-    clip.close()
+    try:
+        clip = mpy.VideoFileClip(video_path)
+        # Применяем эффект изменения скорости (замедление)
+        new_clip = clip.fx(mpy.vfx.speedx, factor=0.8)
+        # Записываем видео с дополнительными параметрами
+        new_clip.write_videofile(
+            output_path,
+            codec="libx264",
+            audio_codec="aac",
+            temp_audiofile="temp-audio.m4a",
+            remove_temp=True,
+            logger="bar"  # Можно заменить на None для отключения логирования
+        )
+    finally:
+        new_clip.close()
+        clip.close()
 
 async def video_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     video_file = await update.message.video.get_file()
