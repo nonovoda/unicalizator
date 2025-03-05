@@ -53,11 +53,19 @@ def process_video(video_path: str, output_path: str):
 
 async def video_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     video_file = await update.message.video.get_file()
+
+    # Создаём временный файл для сохранения входного видео
     with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_in:
         video_path = temp_in.name
-        await video_file.download(custom_path=video_path)
+
+    # Скачиваем видео и сохраняем в файл
+    video_bytes = await video_file.download_as_bytearray()
+    with open(video_path, "wb") as f:
+        f.write(video_bytes)
+
     with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_out:
         output_path = temp_out.name
+
     try:
         process_video(video_path, output_path)
         await update.message.reply_video(video=InputFile(output_path))
