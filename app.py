@@ -45,19 +45,24 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def process_video(video_path: str, output_path: str):
-    clip = mpy.VideoFileClip(video_path)
-    # Применяем эффект изменения скорости (замедление)
-    new_clip = clip.fx(mpy.vfx.speedx, factor=0.8)
     try:
+        clip = mpy.VideoFileClip(video_path)
+        new_clip = clip.fx(mpy.vfx.speedx, factor=0.8)
+        
+        # Попробуем сначала без аудио для диагностики
         new_clip.write_videofile(
             output_path,
             codec="libx264",
-            audio_codec="aac",
-            temp_audiofile="temp-audio.m4a",
-            remove_temp=True,
-            threads=1,                     # Ограничиваем число потоков
-            ffmpeg_params=["-preset", "ultrafast"]  # Применяем быстрый пресет
+            audio=False,  # временно отключаем аудио
+            threads=1,
+            ffmpeg_params=["-preset", "ultrafast"],
+            logger="bar"  # вывод прогресса
         )
+        
+        # Проверяем размер файла после записи
+        file_size = os.path.getsize(output_path)
+        if file_size < 1024:
+            raise ValueError(f"Полученный видеофайл слишком мал: {file_size} байт")
     finally:
         new_clip.close()
         clip.close()
